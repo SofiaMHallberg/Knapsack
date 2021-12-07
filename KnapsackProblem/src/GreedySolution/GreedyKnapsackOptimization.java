@@ -1,12 +1,11 @@
 package GreedySolution;
 
 import java.io.*;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 
 public class GreedyKnapsackOptimization {
-    //    private int[] weightConstraints;
+
     private LinkedList<Item> itemList;
     private LinkedList<Knapsack> knapsackList;
     private int totalValue = 0;
@@ -15,7 +14,6 @@ public class GreedyKnapsackOptimization {
     public void readInput() throws IOException {
         BufferedReader inputData = new BufferedReader(new InputStreamReader(new FileInputStream("files\\knapsackInput")));
         nbrOfKnapsacks = Integer.parseInt(inputData.readLine());
-//        weightConstraints = new int[nbrOfKnapsacks];
         knapsackList = new LinkedList<>();
         for (int i = 0; i < nbrOfKnapsacks; i++) {
             Knapsack knapsack = new Knapsack(Integer.parseInt(inputData.readLine()));
@@ -38,9 +36,9 @@ public class GreedyKnapsackOptimization {
         }
     }
 
-    public void fillOneKnapsackAtTheTime() {
+    public LinkedList<Knapsack> fillOneKnapsackAtTheTime() {
+        reset();
         for (int knapsackNbr = 0; knapsackNbr < knapsackList.size(); knapsackNbr++) {
-            knapsackList.get(knapsackNbr).resetKnapsack();
             for (int itemNbr = 0; itemNbr < itemList.size(); itemNbr++) {
                 Item item = itemList.get(itemNbr);
                 if (item.isAvailable()) {
@@ -51,9 +49,14 @@ public class GreedyKnapsackOptimization {
             }
         }
         System.out.println("fillOneKnapsackAtTheTime: " + calculateTotalValue(knapsackList));
+        return knapsackList;
     }
 
-    public int calculateTotalValue(LinkedList<Knapsack> list) {
+    public void fillAllKnapsacksAtOnce() {
+        reset();
+    }
+
+    public static int calculateTotalValue(LinkedList<Knapsack> list) {
         int totalValue = 0;
         for (Knapsack knapsack : list) {
             double value = knapsack.getCurrentValue();
@@ -64,10 +67,47 @@ public class GreedyKnapsackOptimization {
         return totalValue;
     }
 
+    public void reset() {
+        for (Item item : itemList) {
+            item.setAvailability(true);
+        }
+        for (Knapsack knapsack : knapsackList) {
+            knapsack.resetKnapsack();
+        }
+    }
+
+    public LinkedList<Item> getItemList() {
+        return itemList;
+    }
+
+    public void neighborhoodSearch() {
+        LinkedList<Knapsack> bestSoFar;
+        int bestValue;
+        Item nextAvailableItem = null;
+        for (Item item : itemList) {
+            if (item.isAvailable()) {
+                nextAvailableItem = item;
+                break;
+            }
+        }
+        if (nextAvailableItem != null) {
+            for (Knapsack knapsack : knapsackList) {
+                for (Item item : knapsack.getIncludedItems()) {
+                    if (item.getBenefit() < nextAvailableItem.getBenefit()) {
+                        if (knapsack.itemExchange(item, nextAvailableItem)) {
+                            nextAvailableItem = item;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
     public static void main(String[] args) throws IOException {
         GreedyKnapsackOptimization optimizeKnapsack = new GreedyKnapsackOptimization();
         optimizeKnapsack.readInput();
-        optimizeKnapsack.fillOneKnapsackAtTheTime();
+        LinkedList<Knapsack> knapsackList = optimizeKnapsack.fillOneKnapsackAtTheTime();
+        LinkedList<Item> itemList = optimizeKnapsack.getItemList();
     }
 }

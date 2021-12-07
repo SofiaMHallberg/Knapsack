@@ -4,6 +4,9 @@ import java.util.LinkedList;
 
 public class Knapsack {
     private int capacity;
+
+
+
     private LinkedList<Item> includedItems;
 
     public Knapsack(int capacity) {
@@ -20,6 +23,17 @@ public class Knapsack {
             System.out.println("item with weight " + item.getWeight() + " added to knapsack with capacity " + capacity);
             return true;
         }
+    }
+
+    public boolean removeItem(Item newItem) {
+        for (Item itemInKnapsack : includedItems) {
+            if (itemInKnapsack.hashCode() == newItem.hashCode()) {
+                itemInKnapsack.setAvailability(true);
+                includedItems.remove(itemInKnapsack);
+                return true;
+            }
+        }
+        return false;
     }
 
     public int getCapacity() {
@@ -42,7 +56,21 @@ public class Knapsack {
         return totalValue;
     }
 
+    public LinkedList<Item> getIncludedItems() {
+        return includedItems;
+    }
+
     public void resetKnapsack() {
         includedItems.clear();
+    }
+
+    public boolean itemExchange(Item itemInKnapsack, Item newItem) {
+        if (capacity <= (getCurrentWeight() - itemInKnapsack.getWeight() + newItem.getWeight())) {
+            if (removeItem(itemInKnapsack)) {
+                addItem(newItem);
+                return true;
+            }
+        }
+        return false;
     }
 }
