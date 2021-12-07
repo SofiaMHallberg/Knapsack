@@ -20,7 +20,7 @@ public class Knapsack {
         }
         else {
             includedItems.add(item);
-            System.out.println("item with weight " + item.getWeight() + " added to knapsack with capacity " + capacity);
+            System.out.println("item with weight " + item.getWeight() + " and value " + item.getValue() + " added to knapsack with capacity " + capacity);
             return true;
         }
     }
@@ -67,6 +67,7 @@ public class Knapsack {
     public boolean itemExchange(Item itemInKnapsack, Item newItem) {
         if (capacity <= (getCurrentWeight() - itemInKnapsack.getWeight() + newItem.getWeight())) {
             if (removeItem(itemInKnapsack)) {
+                System.out.println("removing " + itemInKnapsack.getWeight() + " and adding " + newItem.getWeight() + " (weight)");
                 addItem(newItem);
                 return true;
             }
