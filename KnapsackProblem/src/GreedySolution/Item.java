@@ -1,14 +1,16 @@
 package GreedySolution;
 
 public class Item implements Comparable<Item> {
-    private int weight;
     private int value;
+    private int weight;
+    private int itemNbr;
     private double benefit;
     private boolean available;
 
-    public Item(int value, int weight) {
-        this.weight=weight;
+    public Item(int value, int weight, int itemNbr) {
         this.value=value;
+        this.weight=weight;
+        this.itemNbr=itemNbr;
         benefit = (double) value / weight;
         available=true;
     }
@@ -19,6 +21,10 @@ public class Item implements Comparable<Item> {
 
     public int getValue() {
         return value;
+    }
+
+    public int getItemNbr() {
+        return itemNbr;
     }
 
     public double getBenefit() {

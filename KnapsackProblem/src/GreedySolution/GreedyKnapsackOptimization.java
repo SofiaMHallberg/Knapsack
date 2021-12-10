@@ -8,25 +8,26 @@ public class GreedyKnapsackOptimization {
 
     private LinkedList<Item> itemList;
     private LinkedList<Knapsack> knapsackList;
-    private int totalValue = 0;
     private int nbrOfKnapsacks;
+    int nbrOfItems;
 
     public void readInput() throws IOException {
         BufferedReader inputData = new BufferedReader(new InputStreamReader(new FileInputStream("files\\knapsackInput")));
         nbrOfKnapsacks = Integer.parseInt(inputData.readLine());
         knapsackList = new LinkedList<>();
         for (int i = 0; i < nbrOfKnapsacks; i++) {
-            Knapsack knapsack = new Knapsack(Integer.parseInt(inputData.readLine()));
+            Knapsack knapsack = new Knapsack(Integer.parseInt(inputData.readLine()), i);
             knapsackList.add(knapsack);
         }
 
-        int nbrOfItems = Integer.parseInt(inputData.readLine());
+        nbrOfItems = Integer.parseInt(inputData.readLine());
         itemList = new LinkedList();
         for (int i = 0; i < nbrOfItems; i++) {
             String[] itemValues = inputData.readLine().split(" ");
-            Item newItem = new Item(Integer.parseInt(itemValues[0]), Integer.parseInt(itemValues[1]));
+            Item newItem = new Item(Integer.parseInt(itemValues[0]), Integer.parseInt(itemValues[1]), i);
             itemList.add(newItem);
         }
+
         itemList.sort(Collections.reverseOrder());
         for (int i = 0; i < itemList.size(); i++) {
             System.out.println("itemNbr " + i + ", value = " + itemList.get(i).getValue() + ", weight = " + itemList.get(i).getWeight());
@@ -38,8 +39,8 @@ public class GreedyKnapsackOptimization {
 
     public void fillOneKnapsackAtTheTime() {
         reset();
-        for (int knapsackNbr = 0; knapsackNbr < knapsackList.size(); knapsackNbr++) {
-            for (int itemNbr = 0; itemNbr < itemList.size(); itemNbr++) {
+        for (int knapsackNbr = 0; knapsackNbr < nbrOfKnapsacks; knapsackNbr++) {
+            for (int itemNbr = 0; itemNbr < nbrOfItems; itemNbr++) {
                 Item item = itemList.get(itemNbr);
                 if (item.isAvailable()) {
                     if (knapsackList.get(knapsackNbr).addItem(item)) {
@@ -55,10 +56,6 @@ public class GreedyKnapsackOptimization {
         for (int i = 0; i < itemList.size(); i++) {
             System.out.println("item nbr " + i + "'s availability is " + itemList.get(i).isAvailable());
         }
-    }
-
-    public void fillAllKnapsacksAtOnce() {
-        reset();
     }
 
     public static int calculateTotalValue(LinkedList<Knapsack> list) {
@@ -86,25 +83,37 @@ public class GreedyKnapsackOptimization {
     }
 
     public void neighborhoodSearch() {
-        Item nextAvailableItem = null;
+        LinkedList<Item> availableItems=new LinkedList<>();
         for (Item item : itemList) {
             if (item.isAvailable()) {
-                nextAvailableItem = item;
-                break;
+                availableItems.add(item);
             }
         }
-        if (nextAvailableItem != null) {
+
+        for (Item availableItem:availableItems) {
             for (Knapsack knapsack : knapsackList) {
                 for (Item item : knapsack.getIncludedItems()) {
-                    if (item.getBenefit() < nextAvailableItem.getBenefit()) {
-                        if (knapsack.itemExchange(item, nextAvailableItem)) {
-                            nextAvailableItem = item;
+                    if (item.getValue() < availableItem.getValue()) {
+                        if (knapsack.itemExchange(item, availableItem)) {
+                            availableItem = item;
                         }
                     }
                 }
             }
         }
         System.out.println(calculateTotalValue(knapsackList));
+    }
+
+    public void rotateItems() {
+        for(int knapsackNbr=nbrOfKnapsacks-1; knapsackNbr>=0; knapsackNbr--) {
+            int itemsInKnapsack=knapsackList.get(knapsackNbr).getIncludedItems().size();
+        }
+
+
+    }
+
+    public LinkedList<Knapsack> getKnapsackList() {
+        return knapsackList;
     }
 
     public static void main(String[] args) throws IOException {

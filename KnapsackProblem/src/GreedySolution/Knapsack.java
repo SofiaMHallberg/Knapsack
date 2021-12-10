@@ -5,13 +5,17 @@ import java.util.LinkedList;
 public class Knapsack {
     private int capacity;
 
-
-
+    private int knapsackNbr;
     private LinkedList<Item> includedItems;
 
-    public Knapsack(int capacity) {
+    public Knapsack(int capacity, int knapsackNbr) {
         this.capacity = capacity;
+        this.knapsackNbr=knapsackNbr;
         includedItems = new LinkedList<>();
+    }
+
+    public int getKnapsackNbr() {
+        return knapsackNbr;
     }
 
     public boolean addItem(Item item) {
