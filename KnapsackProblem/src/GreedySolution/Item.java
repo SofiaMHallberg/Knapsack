@@ -1,10 +1,10 @@
 package GreedySolution;
 
 public class Item implements Comparable<Item> {
-    private int value;
-    private int weight;
-    private int itemNbr;
-    private double benefit;
+    private final int value;
+    private final int weight;
+    private final int itemNbr;
+    private final double benefit;
     private boolean available;
 
     public Item(int value, int weight, int itemNbr) {

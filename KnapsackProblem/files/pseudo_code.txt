@@ -1,0 +1,22 @@
+Greedy algorithm:
+empty all knapsacks;
+set all items to available;
+for (all knapsacks)
+    for (all items in the list, sorted from highest benefit to lowest)
+        if (item is available AND item weight is less than free space in the knapsack)
+            add item to knapsack;
+            set item availability to false;
+
+Neighborhood search:
+save initial total value as an integer;
+for (all knapsacks)
+    for (all items in the knapsack)
+        for (all other knapsacks)
+            if (an item from the first knapsack fits inside the second)
+                add item to the second knapsack;
+                remove item from the first knapsack;
+for (all available items)
+    for (all knapsacks)
+        if (item fits in knapsack)
+            add item to knapsack;
+check if new total value is higher than initial total value;

@@ -3,9 +3,9 @@ package GreedySolution;
 import java.util.LinkedList;
 
 public class Knapsack {
-    private int capacity;
+    private final int capacity;
 
-    private int knapsackNbr;
+    private final int knapsackNbr;
     private LinkedList<Item> includedItems;
 
     public Knapsack(int capacity, int knapsackNbr) {
@@ -24,7 +24,6 @@ public class Knapsack {
         }
         else {
             includedItems.add(item);
-            item.setAvailability(false);
             System.out.println("item " + item.getItemNbr() + " added to knapsack " + knapsackNbr);
             return true;
         }
@@ -32,12 +31,9 @@ public class Knapsack {
 
     public boolean removeItem(Item newItem) {
         for (Item itemInKnapsack : includedItems) {
-            if (itemInKnapsack.hashCode() == newItem.hashCode()) {
-                itemInKnapsack.setAvailability(true);
+            if (itemInKnapsack.getItemNbr() == newItem.getItemNbr()) {
                 System.out.println("Item " + newItem.getItemNbr() + " removed from knapsack " + knapsackNbr);
-                if (includedItems.remove(itemInKnapsack)) {
-                    System.out.println("REMOVED");
-                }
+                includedItems.remove(itemInKnapsack);
                 return true;
             }
         }
