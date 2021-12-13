@@ -5,6 +5,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Random;
 
+/**
+ * @author Sofia Hallberg, Oscar Kareld
+ */
 public class GreedyKnapsackOptimization {
 
     private LinkedList<Item> itemList;
@@ -43,12 +46,12 @@ public class GreedyKnapsackOptimization {
         for (int i = 0; i < nbrOfItems; i++) {
             Item item = new Item(random.nextInt(ITEM_VALUE_RANGE) + ITEM_LOWEST_VALUE, random.nextInt(ITEM_WEIGHT_RANGE) + ITEM_LOWEST_WEIGHT, i);
             itemList.add(item);
-            System.out.println("Item created: weight: " + item.getWeight() + ", value: " + item.getValue());
+//            System.out.println("Item created: weight: " + item.getWeight() + ", value: " + item.getValue());
         }
         for (int i = 0; i < nbrOfKnapsacks; i++) {
             Knapsack knapsack = new Knapsack(random.nextInt(KNAPSACK_CAPACITY_RANGE) + KNAPSACK_CAPACITY_MINIMUM, i);
             knapsackList.add(knapsack);
-            System.out.println("Knapsack " + knapsack.getKnapsackNbr() + " created. capacity: " + knapsack.getCapacity() + ".");
+//            System.out.println("Knapsack " + knapsack.getKnapsackNbr() + " created. capacity: " + knapsack.getCapacity() + ".");
         }
         itemList.sort(Collections.reverseOrder());
 
@@ -95,13 +98,23 @@ public class GreedyKnapsackOptimization {
                 }
             }
         }
-        for (int i = 0; i < knapsackList.size(); i++) {
-            System.out.println("AFTER GREEDY ALGORITHM: Knapsack " + knapsackList.get(i).getKnapsackNbr() + ". value = "
-                    + knapsackList.get(i).getCurrentValue() + ". weight = " + knapsackList.get(i).getCurrentWeight());
-        }
-        System.out.println("TOTAL VALUE AFTER GREEDY ALGORITHM: " + calculateTotalValue(knapsackList));
+        System.out.println("~~~~ GREEDY ALGORITHM ~~~~");
+        printCapacityInfo();
     }
 
+    private void printCapacityInfo()
+    {
+        int totalCapacity = 0;
+        int usedCapacity = 0;
+        for (int i = 0; i < knapsackList.size(); i++) {
+            totalCapacity += knapsackList.get(i).getCapacity();
+            usedCapacity += knapsackList.get(i).getCurrentWeight();
+        }
+        System.out.println("TOTAL CAPACITY = " + totalCapacity);
+        System.out.println("USED CAPACITY = " + usedCapacity);
+        System.out.println("TOTAL VALUE = " + calculateTotalValue(knapsackList));
+
+    }
     public void printItemList() {
         for (int i = 0; i < itemList.size(); i++) {
             System.out.println("item nbr " + i + "'s availability is " + itemList.get(i).isAvailable());
@@ -142,6 +155,7 @@ public class GreedyKnapsackOptimization {
      * total value.
      */
     public void neighborhoodSearch() {
+        System.out.println("~~~~ NEIGHBORHOOD SEARCH ~~~~");
         int initialTotalValue = calculateTotalValue(knapsackList);
         boolean exchangeIsMade = false;
 
@@ -170,7 +184,6 @@ public class GreedyKnapsackOptimization {
             LinkedList<Item> availableItems = getAvailableItems();
             for (int j = 0; j < availableItems.size(); j++) {
                 if (knapsackList.get(i).addItem(itemList.get(j))) {
-                    System.out.println("ADDED A PREVIOUSLY UNUSED ITEM TO A KNAPSACK");
                     itemList.get(j).setAvailability(false);
                 }
             }
@@ -178,8 +191,8 @@ public class GreedyKnapsackOptimization {
         if (!exchangeIsMade) {
             System.out.println("No better solution found. \n\n");
         } else if (initialTotalValue < calculateTotalValue(knapsackList)) {
-
-            System.out.println("totalValue improved from " + initialTotalValue + " to " + calculateTotalValue(knapsackList) + "\n\n");
+            printCapacityInfo();
+            System.out.println("\nTotal value improved from " + initialTotalValue + " to " + calculateTotalValue(knapsackList) + "\n\n");
             improvedSearches++;
         } else {
             System.out.println("Exchange was made but the total value was not improved.\n\n");
@@ -188,8 +201,6 @@ public class GreedyKnapsackOptimization {
                 for (int j = 0; j < knapsackList.get(i).getIncludedItems().size(); j++) {
                     System.out.println("item " + knapsackList.get(i).getIncludedItems().get(j).getItemNbr());
                 }
-//                System.out.println("Knapsack " + knapsackList.get(i).getKnapsackNbr() + ". value = "
-//                        + knapsackList.get(i).getCurrentValue() + ". weight = " + knapsackList.get(i).getCurrentWeight());
             }
         }
     }
@@ -197,9 +208,7 @@ public class GreedyKnapsackOptimization {
     private void addUnusedItemToFreedUpKnapsack(Knapsack knapsack) {
         LinkedList<Item> availableItems = getAvailableItems();
         for (int i = 0; i < availableItems.size(); i++) {
-            if (knapsack.addItem(availableItems.get(i))) {
-                System.out.println("SUCCESS");
-            }
+            knapsack.addItem(availableItems.get(i));
         }
     }
 
@@ -227,7 +236,7 @@ public class GreedyKnapsackOptimization {
 
     public static void main(String[] args) throws IOException {
         GreedyKnapsackOptimization optimizeKnapsack = new GreedyKnapsackOptimization();
-        boolean random = false; //true = run the program 1000 times with random input
+        boolean random = true; //true = run the program 1000 times with random input
                                 //false = run with test input to verify that the algorithm works as intended
 
         //Runs the program 1000 times with random values:

@@ -1,5 +1,8 @@
 package GreedySolution;
 
+/**
+ * @author Sofia Hallberg, Oscar Kareld
+ */
 public class Item implements Comparable<Item> {
     private final int value;
     private final int weight;

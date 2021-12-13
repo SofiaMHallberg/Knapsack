@@ -2,6 +2,9 @@ package GreedySolution;
 
 import java.util.LinkedList;
 
+/**
+ * @author Sofia Hallberg, Oscar Kareld
+ */
 public class Knapsack {
     private final int capacity;
 
@@ -24,7 +27,6 @@ public class Knapsack {
         }
         else {
             includedItems.add(item);
-            System.out.println("item " + item.getItemNbr() + " added to knapsack " + knapsackNbr);
             return true;
         }
     }
@@ -32,7 +34,6 @@ public class Knapsack {
     public boolean removeItem(Item newItem) {
         for (Item itemInKnapsack : includedItems) {
             if (itemInKnapsack.getItemNbr() == newItem.getItemNbr()) {
-                System.out.println("Item " + newItem.getItemNbr() + " removed from knapsack " + knapsackNbr);
                 includedItems.remove(itemInKnapsack);
                 return true;
             }
