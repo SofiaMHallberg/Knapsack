@@ -12,15 +12,15 @@ public class GreedyKnapsackOptimization {
     private int nbrOfKnapsacks;
     private int nbrOfItems;
 
-    private final int ITEM_RANGE = 100;
-    private final int ITEM_MINIMUM = 40;
+    private final int ITEM_RANGE = 10; //100
+    private final int ITEM_MINIMUM = 15; //40
 
     private final int ITEM_LOWEST_WEIGHT = 5;
     private final int ITEM_WEIGHT_RANGE = 50;
     private final int ITEM_LOWEST_VALUE = 5;
     private final int ITEM_VALUE_RANGE = 25;
 
-    private final int KNAPSACK_RANGE = 5;
+    private final int KNAPSACK_RANGE = 1; //5
     private final int KNAPSACK_MINIMUM = 3;
 
     private final int KNAPSACK_CAPACITY_RANGE = 50;
@@ -43,6 +43,7 @@ public class GreedyKnapsackOptimization {
         for (int i = 0; i < nbrOfItems; i++) {
             Item item = new Item(random.nextInt(ITEM_VALUE_RANGE) + ITEM_LOWEST_VALUE, random.nextInt(ITEM_WEIGHT_RANGE) + ITEM_LOWEST_WEIGHT, i);
             itemList.add(item);
+            System.out.println("Item created: weight: " + item.getWeight() + ", value: " + item.getValue());
         }
         for (int i = 0; i < nbrOfKnapsacks; i++) {
             Knapsack knapsack = new Knapsack(random.nextInt(KNAPSACK_CAPACITY_RANGE) + KNAPSACK_CAPACITY_MINIMUM, i);
@@ -54,7 +55,7 @@ public class GreedyKnapsackOptimization {
     }
 
     public void readInput() throws IOException {
-        BufferedReader inputData = new BufferedReader(new InputStreamReader(new FileInputStream("files\\knapsackInput")));
+        BufferedReader inputData = new BufferedReader(new InputStreamReader(new FileInputStream("files\\testInput.txt")));
         nbrOfKnapsacks = Integer.parseInt(inputData.readLine());
         knapsackList = new LinkedList<>();
         for (int i = 0; i < nbrOfKnapsacks; i++) {
@@ -155,9 +156,11 @@ public class GreedyKnapsackOptimization {
                     }
                     Knapsack otherKnapsack = knapsackList.get(nextKnapsack);
                     if (otherKnapsack.addItem(item)) {
+                        item.setAvailability(false);
                         if (knapsack.removeItem(item)) {
-                            item.setAvailability(false);
                             exchangeIsMade = true;
+                            addUnusedItemToFreedUpKnapsack(knapsack);
+                            break;
                         }
                     }
                 }
@@ -168,24 +171,42 @@ public class GreedyKnapsackOptimization {
             for (int j = 0; j < availableItems.size(); j++) {
                 if (knapsackList.get(i).addItem(itemList.get(j))) {
                     System.out.println("ADDED A PREVIOUSLY UNUSED ITEM TO A KNAPSACK");
+                    itemList.get(j).setAvailability(false);
                 }
             }
         }
         if (!exchangeIsMade) {
             System.out.println("No better solution found. \n\n");
         } else if (initialTotalValue < calculateTotalValue(knapsackList)) {
-            for (int i = 0; i < knapsackList.size(); i++) {
-                System.out.println("Knapsack " + knapsackList.get(i).getKnapsackNbr() + ". value = "
-                        + knapsackList.get(i).getCurrentValue() + ". weight = " + knapsackList.get(i).getCurrentWeight());
-            }
+
             System.out.println("totalValue improved from " + initialTotalValue + " to " + calculateTotalValue(knapsackList) + "\n\n");
             improvedSearches++;
-        } else System.out.println("Exchange was made but the total value was not improved.\n\n");
+        } else {
+            System.out.println("Exchange was made but the total value was not improved.\n\n");
+            for (int i = 0; i < knapsackList.size(); i++) {
+                System.out.println("KNAPSACK " + knapsackList.get(i).getKnapsackNbr() + ":");
+                for (int j = 0; j < knapsackList.get(i).getIncludedItems().size(); j++) {
+                    System.out.println("item " + knapsackList.get(i).getIncludedItems().get(j).getItemNbr());
+                }
+//                System.out.println("Knapsack " + knapsackList.get(i).getKnapsackNbr() + ". value = "
+//                        + knapsackList.get(i).getCurrentValue() + ". weight = " + knapsackList.get(i).getCurrentWeight());
+            }
+        }
+    }
+
+    private void addUnusedItemToFreedUpKnapsack(Knapsack knapsack) {
+        LinkedList<Item> availableItems = getAvailableItems();
+        for (int i = 0; i < availableItems.size(); i++) {
+            if (knapsack.addItem(availableItems.get(i))) {
+                System.out.println("SUCCESS");
+            }
+        }
     }
 
 
     /**
      * Iterates through all items and check if they're available
+     *
      * @return all available items.
      */
     private LinkedList<Item> getAvailableItems() {
@@ -206,18 +227,33 @@ public class GreedyKnapsackOptimization {
 
     public static void main(String[] args) throws IOException {
         GreedyKnapsackOptimization optimizeKnapsack = new GreedyKnapsackOptimization();
-        int totalSearches = 1000;
-        for (int i = 0; i < totalSearches; i++) {
-            optimizeKnapsack.generateRandomData();
+        boolean random = false; //true = run the program 1000 times with random input
+                                //false = run with test input to verify that the algorithm works as intended
+
+        //Runs the program 1000 times with random values:
+        if (random) {
+            int totalSearches = 1000;
+            for (int i = 0; i < totalSearches; i++) {
+                optimizeKnapsack.generateRandomData();
+                optimizeKnapsack.greedyAlgorithm();
+                optimizeKnapsack.neighborhoodSearch();
+            }
+            System.out.println("The neighborhood search improved " +
+                    ((double) optimizeKnapsack.getImprovedSearches() / (double) totalSearches * 100) + "% of the total searches.");
+        }
+        else {
+            //Runs the program with fixed values.
+            //Expected results 63 (greedy) and 66 (neighborhood search)
+            optimizeKnapsack.readInput();
             optimizeKnapsack.greedyAlgorithm();
             optimizeKnapsack.neighborhoodSearch();
         }
-        System.out.println("The neighborhood search improved " + ((double) optimizeKnapsack.getImprovedSearches() / (double) totalSearches * 100) + "% of the total searches.");
-    }
 
-    private int getImprovedSearches() {
-        return improvedSearches;
+        }
+
+        private int getImprovedSearches () {
+            return improvedSearches;
+        }
     }
-}
 
 
