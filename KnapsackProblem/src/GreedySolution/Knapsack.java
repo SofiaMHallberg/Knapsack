@@ -24,7 +24,8 @@ public class Knapsack {
         }
         else {
             includedItems.add(item);
-            System.out.println("item with weight " + item.getWeight() + " and value " + item.getValue() + " added to knapsack with capacity " + capacity);
+            item.setAvailability(false);
+            System.out.println("item " + item.getItemNbr() + " added to knapsack " + knapsackNbr);
             return true;
         }
     }
@@ -33,7 +34,10 @@ public class Knapsack {
         for (Item itemInKnapsack : includedItems) {
             if (itemInKnapsack.hashCode() == newItem.hashCode()) {
                 itemInKnapsack.setAvailability(true);
-                includedItems.remove(itemInKnapsack);
+                System.out.println("Item " + newItem.getItemNbr() + " removed from knapsack " + knapsackNbr);
+                if (includedItems.remove(itemInKnapsack)) {
+                    System.out.println("REMOVED");
+                }
                 return true;
             }
         }
